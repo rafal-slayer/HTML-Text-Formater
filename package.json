@@ -2,7 +2,7 @@
   "name": "html-text-formater",
   "displayName": "HTML Text Formater",
   "description": "An extension that allows you to format all text contained within the HTML tags.",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -25,7 +25,7 @@
           {
             "command": "html-text-formater.formatHTMLFile",
             "group": "1_modification@1",
-            "when": "editorTextFocus"
+            "when": "editorTextFocus && editorLangId == html"
           }
       ]
     },

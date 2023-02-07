@@ -11,25 +11,6 @@ const beautify = require("js-beautify").html;
 /**
  * @param {vscode.ExtensionContext} context
  */
-function format(html) {
-    var tab = '\t';
-    var result = '';
-    var indent= '';
-
-    html.split(/>\s*</).forEach(function(element) {
-        if (element.match( /^\/\w/ )) {
-            indent = indent.substring(tab.length);
-        }
-
-        result += indent + '<' + element + '>\r\n';
-
-        if (element.match( /^<?\w[^>]*[^\/]$/ ) && !element.startsWith("input")  ) { 
-            indent += tab;              
-        }
-    });
-
-    return result.substring(1, result.length-3);
-}
 
 function reformat(string) {
 	var inputValue = string.toString();
@@ -83,12 +64,16 @@ function activate(context) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "html-text-formater" is now active!');
-
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerTextEditorCommand('html-text-formater.formatHTMLFile', (editor, edit) => {
 		// The code you place here will be executed every time your command is executed
+		if(editor.document.languageId.toLowerCase() != "html"){
+			vscode.window.showErrorMessage('Błędne rozszerzenie pliku!')
+			return 1;
+		}
+
 		let htmlFile  = editor.document.getText()
 
 		let DOM = new JSDOM(htmlFile, {
@@ -112,7 +97,7 @@ function activate(context) {
 		for(var i = 0; i < results.length; i++){
 			var text = trimmedResults[i]
 			var text = text.slice(1, text.length-1)
-			console.log(text)
+			// console.log(text)
 			
 			bodyStringified = bodyStringified.replace(`${trimmedResults[i]}`, `>${reformat(text)}<`)
 		}
@@ -133,7 +118,7 @@ function activate(context) {
 		for(var i = 0; i < changes.length; i++){
 			var text = changes[i]
 			var text = text.slice(1, text.length-1)
-			console.log(text)
+			// console.log(text)
 			
 			bodyStringified = bodyStringified.replace(`${changes[i]}`, `>\n${reformat(text)}\n<`)
 		}
