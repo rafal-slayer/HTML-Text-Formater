@@ -3,6 +3,7 @@
 const vscode = require('vscode');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
+const beautify = require("js-beautify").html;
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -10,7 +11,25 @@ const { JSDOM } = jsdom;
 /**
  * @param {vscode.ExtensionContext} context
  */
+function format(html) {
+    var tab = '\t';
+    var result = '';
+    var indent= '';
 
+    html.split(/>\s*</).forEach(function(element) {
+        if (element.match( /^\/\w/ )) {
+            indent = indent.substring(tab.length);
+        }
+
+        result += indent + '<' + element + '>\r\n';
+
+        if (element.match( /^<?\w[^>]*[^\/]$/ ) && !element.startsWith("input")  ) { 
+            indent += tab;              
+        }
+    });
+
+    return result.substring(1, result.length-3);
+}
 
 function reformat(string) {
 	var inputValue = string.toString();
@@ -77,7 +96,7 @@ function activate(context) {
 			includeNodeLocations: true,
 		  });
 		
-		let body = DOM.window.document.getElementsByTagName('body')[0]
+		let body = DOM.window.document.body
 		let bodyStringified = body.outerHTML
 		let changes = [...bodyStringified.matchAll(/>[\s\S]*?</gmi)]
 		changes = changes.map(element => element[0])
@@ -97,12 +116,38 @@ function activate(context) {
 			
 			bodyStringified = bodyStringified.replace(`${trimmedResults[i]}`, `>${reformat(text)}<`)
 		}
+		// changes = [...bodyStringified.matchAll(/>.+</gmi)]
+		// changes = changes.map(element => element[0])
+		// for(var i = 0; i < changes.length; i++){
+		// 	var text = changes[i]
+		// 	var text = text.slice(1, text.length-1)
+		// 	console.log(text)
+			
+		// 	bodyStringified = bodyStringified.replace(`${trimmedResults[i]}`, `>\n${reformat(text)}\n<`)
+		// }
+		// console.log(changes)
+		// console.log(bodyStringified)
 		bodyStringified = bodyStringified.replace(/></g, '>\n<')
-		console.log(bodyStringified)
-		body.outerHTML = bodyStringified
-		edit.insert(editor.selection.active, DOM.window.document.documentElement.outerHTML)
+		changes = [...bodyStringified.matchAll(/>.+</gmi)]
+		changes = changes.map(element => element[0])
+		for(var i = 0; i < changes.length; i++){
+			var text = changes[i]
+			var text = text.slice(1, text.length-1)
+			console.log(text)
+			
+			bodyStringified = bodyStringified.replace(`${changes[i]}`, `>\n${reformat(text)}\n<`)
+		}
+		bodyStringified = beautify(bodyStringified,)
+		body.innerHTML = bodyStringified
+		vscode.window.activeTextEditor.edit(builder => {
+			const doc = vscode.window.activeTextEditor.document;
+			builder.replace(new vscode.Range(doc.lineAt(0).range.start, doc.lineAt(doc.lineCount - 1).range.end), DOM.window.document.documentElement.outerHTML);
+		});
+		// Dodawanie na koncu
+		// edit.replace(editor.selection.active, DOM.window.document.documentElement.outerHTML)
+
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from HTML Text Formater!');
+		vscode.window.showInformationMessage('WHOOSH!');
 	});
 
 	context.subscriptions.push(disposable);
