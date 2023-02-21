@@ -23,3 +23,7 @@ Initial release of extension.
 ### 1.0.1
 
 Checking if file type matches HTML.
+
+### 1.0.2
+
+Fixing numbers next to other exceptions, and characters neighboring tags
