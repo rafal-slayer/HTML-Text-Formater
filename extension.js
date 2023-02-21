@@ -13,7 +13,7 @@ const beautify = require("js-beautify").html;
  */
 
 function reformat(string) {
-	var inputValue = string.toString();
+	var inputValue = ` ${string.toString()} `;
 
 	// Brand sierotki
 	// var brandName = document.getElementById("brand").value;
@@ -28,18 +28,28 @@ function reformat(string) {
 	// var reformated = inputValue.replace(brandRegex, reformatedBrand);
 
 	const sierotki =
-	/ i | a | z | w | oraz | lub | u | I | A | Z | W | ORAZ | LUB | U | o | O | od | do | OD | DO | to | TO |[0-9] | za | ZA /g;
+	/ i | a | z | w | oraz | lub | u | I | A | Z | W | ORAZ | LUB | U | o | O | od | do | OD | DO | to | TO | za | ZA /g;
+	const cyferki = /[0-9] /g;
 	const literka_a = /, a |, A /g;
 	const short_dash = /-/g;
 	const long_dash_space = / – /g;
 
+	// console.log([...inputValue.matchAll(sierotki)])
+
+	// console.log("przed" + reformated)
 	var reformated = inputValue.replace(sierotki, (t1) => {
 		var val = t1.slice(0, -1);
 		return `${val}&nbsp;`;
 	});
-
-	reformated = reformated.replace(short_dash, (t2) => {
+	// console.log("po 1" + reformated)
+	var reformated = reformated.replace(cyferki, (t2) => {
 		var val = t2.slice(0, -1);
+		return `${val}&nbsp;`;
+	});
+	// console.log("po 2" + reformated)
+
+	reformated = reformated.replace(short_dash, (t3) => {
+		var val = t3.slice(0, -1);
 		return `${val}&#8209;`;
 	});
 
@@ -56,7 +66,7 @@ function reformat(string) {
 		reformated = reformated.replace(occurance[0], `<strong>${occurance[1]}</strong>`)
 	})
 
-	return reformated;
+	return reformated.slice(1,-1);
 }
 
 function activate(context) {
@@ -96,7 +106,7 @@ function activate(context) {
 		bodyStringified = bodyStringified.replace(/>\s+</g, '><')
 		for(var i = 0; i < results.length; i++){
 			var text = trimmedResults[i]
-			var text = text.slice(1, text.length-1)
+			var text = text.slice(1, -1)
 			// console.log(text)
 			
 			bodyStringified = bodyStringified.replace(`${trimmedResults[i]}`, `>${reformat(text)}<`)
@@ -110,11 +120,10 @@ function activate(context) {
 			
 		// 	bodyStringified = bodyStringified.replace(`${trimmedResults[i]}`, `>\n${reformat(text)}\n<`)
 		// }
-		// console.log(changes)
-		// console.log(bodyStringified)
 		bodyStringified = bodyStringified.replace(/></g, '>\n<')
 		changes = [...bodyStringified.matchAll(/>.+</gmi)]
 		changes = changes.map(element => element[0])
+		// console.log(bodyStringified)
 		for(var i = 0; i < changes.length; i++){
 			var text = changes[i]
 			var text = text.slice(1, text.length-1)
