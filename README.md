@@ -27,3 +27,7 @@ Checking if file type matches HTML.
 ### 1.0.2
 
 Fixing numbers next to other exceptions, and characters neighboring tags
+
+### 1.0.3
+
+Adding `<!DOCTYPE HTML>` to the beginning of the formetted file.

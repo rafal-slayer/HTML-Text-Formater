@@ -135,7 +135,7 @@ function activate(context) {
 		body.innerHTML = bodyStringified
 		vscode.window.activeTextEditor.edit(builder => {
 			const doc = vscode.window.activeTextEditor.document;
-			builder.replace(new vscode.Range(doc.lineAt(0).range.start, doc.lineAt(doc.lineCount - 1).range.end), DOM.window.document.documentElement.outerHTML);
+			builder.replace(new vscode.Range(doc.lineAt(0).range.start, doc.lineAt(doc.lineCount - 1).range.end), `<!DOCTYPE HTML>\n${DOM.window.document.documentElement.outerHTML}`);
 		});
 		// Dodawanie na koncu
 		// edit.replace(editor.selection.active, DOM.window.document.documentElement.outerHTML)
