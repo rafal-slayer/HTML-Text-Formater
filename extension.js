@@ -93,49 +93,40 @@ function activate(context) {
 		
 		let body = DOM.window.document.body
 		let bodyStringified = body.outerHTML
-		let changes = [...bodyStringified.matchAll(/>[\s\S]*?</gmi)]
-		changes = changes.map(element => element[0])
-		let results = changes.filter(element => !element.match(/>[\s]*?</gmi))
-		// console.log(results)
-		let trimmedResults = []
-		results.forEach(element => {
-			trimmedResults.push(element.replace(/\s+/g, ' '))
-		})
-		// console.log(trimmedResults)
+		
+		//wszystkie stringi pomiedzy znacznikami > <
+		let changes = [...bodyStringified.match(/>[\s\S]*?</gmi)]
+		
+		//filtrowanie wynikow zawierajacych tylko biale znaki pomiedzy znacznikami > <
+		changes = changes.filter(element => !element.match(/>[\s]*?</gmi))
+		// console.log(changes)
+		
+		//usuniecie znacznikow > < oraz białych znakow
+		changes = changes.map(element => element.slice(1, -1).trim())
+		console.log(changes)
+		changes = Array.from(new Set(changes))
+		console.log(changes)
+
+		//zamiana duplikatow bialych znakow na spacje
 		bodyStringified = bodyStringified.replace(/\s+/g, ' ')
+		
+		//nowa linia na spacje zeby wszystko one lin e(ulatwienie dla replace)
+		bodyStringified = bodyStringified.replace(/\n/g, ' ')
 		bodyStringified = bodyStringified.replace(/>\s+</g, '><')
-		for(var i = 0; i < results.length; i++){
-			var text = trimmedResults[i]
-			var text = text.slice(1, -1)
-			// console.log(text)
-			
-			bodyStringified = bodyStringified.replace(`${trimmedResults[i]}`, `>${reformat(text)}<`)
-		}
-		// changes = [...bodyStringified.matchAll(/>.+</gmi)]
-		// changes = changes.map(element => element[0])
-		// for(var i = 0; i < changes.length; i++){
-		// 	var text = changes[i]
-		// 	var text = text.slice(1, text.length-1)
-		// 	console.log(text)
-			
-		// 	bodyStringified = bodyStringified.replace(`${trimmedResults[i]}`, `>\n${reformat(text)}\n<`)
-		// }
+
+		changes.forEach(change => {
+			bodyStringified = bodyStringified.replace(change, reformat(change))
+		})
+		
+		//poprawienie stylistyki pliku
 		bodyStringified = bodyStringified.replace(/></g, '>\n<')
-		changes = [...bodyStringified.matchAll(/>.+</gmi)]
-		changes = changes.map(element => element[0])
-		// console.log(bodyStringified)
-		for(var i = 0; i < changes.length; i++){
-			var text = changes[i]
-			var text = text.slice(1, text.length-1)
-			// console.log(text)
-			
-			bodyStringified = bodyStringified.replace(`${changes[i]}`, `>\n${reformat(text)}\n<`)
-		}
-		bodyStringified = beautify(bodyStringified,)
+		bodyStringified = bodyStringified.replace(/> /g, '>\n')
+		bodyStringified = bodyStringified.replace(/ </g, '\n<')
+		bodyStringified = beautify(bodyStringified)
 		body.innerHTML = bodyStringified
 		vscode.window.activeTextEditor.edit(builder => {
 			const doc = vscode.window.activeTextEditor.document;
-			builder.replace(new vscode.Range(doc.lineAt(0).range.start, doc.lineAt(doc.lineCount - 1).range.end), `<!DOCTYPE HTML>\n${DOM.window.document.documentElement.outerHTML}`);
+			builder.replace(new vscode.Range(doc.lineAt(0).range.start, doc.lineAt(doc.lineCount - 1).range.end), `<!DOCTYPE HTML>\n<html lang="pl-PL">\n${DOM.window.document.documentElement.innerHTML}\n</html>`);
 		});
 		// Dodawanie na koncu
 		// edit.replace(editor.selection.active, DOM.window.document.documentElement.outerHTML)
