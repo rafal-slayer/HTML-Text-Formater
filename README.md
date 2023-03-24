@@ -31,3 +31,8 @@ Fixing numbers next to other exceptions, and characters neighboring tags
 ### 1.0.3
 
 Adding `<!DOCTYPE HTML>` to the beginning of the formetted file.
+
+### 1.0.4
+
+Now script gathers text nodes and puts them into an array. It no longers stringifies the whole body.
+Then the array is filter (white space only entries are removed) and the rest is formatted as usual.

@@ -2,6 +2,8 @@
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const jsdom = require("jsdom");
+const { text } = require('stream/consumers');
+const { format } = require('path');
 const { JSDOM } = jsdom;
 const beautify = require("js-beautify").html;
 
@@ -69,6 +71,15 @@ function reformat(string) {
 	return reformated.slice(1,-1);
 }
 
+function textNodesUnder(node){
+	var all = [];
+	for (node=node.firstChild;node;node=node.nextSibling){
+		if (node.nodeType==3) all.push(node);
+		else all = all.concat(textNodesUnder(node));
+	}
+	return all;
+	}
+
 function activate(context) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
@@ -90,48 +101,44 @@ function activate(context) {
 			contentType: "text/html",
 			includeNodeLocations: true,
 		  });
-		
+
 		let body = DOM.window.document.body
-		let bodyStringified = body.outerHTML
-		
-		//wszystkie stringi pomiedzy znacznikami > <
-		let changes = [...bodyStringified.match(/>[\s\S]*?</gmi)]
-		
-		//filtrowanie wynikow zawierajacych tylko biale znaki pomiedzy znacznikami > <
-		changes = changes.filter(element => !element.match(/>[\s]*?</gmi))
-		// console.log(changes)
-		
-		//usuniecie znacznikow > < oraz białych znakow
-		changes = changes.map(element => element.slice(1, -1).trim())
-		console.log(changes)
-		changes = Array.from(new Set(changes))
-		console.log(changes)
+		// let bodyStringified = body.outerHTML
 
-		//zamiana duplikatow bialych znakow na spacje
-		bodyStringified = bodyStringified.replace(/\s+/g, ' ')
-		
-		//nowa linia na spacje zeby wszystko one lin e(ulatwienie dla replace)
-		bodyStringified = bodyStringified.replace(/\n/g, ' ')
-		bodyStringified = bodyStringified.replace(/>\s+</g, '><')
 
-		changes.forEach(change => {
-			bodyStringified = bodyStringified.replace(change, reformat(change))
+		// getting a list of text nodes and filtering out white space only ones
+		let textNodes = textNodesUnder(body)
+		.filter( node => {
+			return !node.textContent.match(/^\s*$/)
 		})
+
+		// going throught each text node
+		for(let textNode of textNodes){
+
+			// removing any unnecessary special characters
+			textNode.textContent = textNode.textContent
+			.replaceAll('&nbsp;',' ')
+			.replaceAll('&#8209;', '-')
+			.replaceAll('&mdash;', '-')
+			.replaceAll(' ', ' ')
+			.replaceAll('‑', '-')
+			.replaceAll('—', '-')
+
+			// getting only text (no whitespaces) 
+			let textToReplace = textNode.textContent.trim()
+
+			// replacing text in text node with a formatted version
+			textNode.textContent = textNode.textContent.replace(textToReplace, reformat(textToReplace))
+		}
 		
-		//poprawienie stylistyki pliku
-		bodyStringified = bodyStringified.replace(/></g, '>\n<')
-		bodyStringified = bodyStringified.replace(/> /g, '>\n')
-		bodyStringified = bodyStringified.replace(/ </g, '\n<')
-		bodyStringified = beautify(bodyStringified)
-		body.innerHTML = bodyStringified
+		// the program changes all '&' to '&amp;' so we undo that change
+		body.innerHTML = body.innerHTML.replaceAll('&amp;', '&')
 		vscode.window.activeTextEditor.edit(builder => {
 			const doc = vscode.window.activeTextEditor.document;
 			builder.replace(new vscode.Range(doc.lineAt(0).range.start, doc.lineAt(doc.lineCount - 1).range.end), `<!DOCTYPE HTML>\n<html lang="pl-PL">\n${DOM.window.document.documentElement.innerHTML}\n</html>`);
 		});
-		// Dodawanie na koncu
-		// edit.replace(editor.selection.active, DOM.window.document.documentElement.outerHTML)
-
-		// Display a message box to the user
+		
+		// Display a message box to the user after successfully running the extension
 		vscode.window.showInformationMessage('WHOOSH!');
 	});
 
