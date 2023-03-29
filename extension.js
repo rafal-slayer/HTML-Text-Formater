@@ -106,7 +106,7 @@ function activate(context) {
 		// let bodyStringified = body.outerHTML
 
 
-		// getting a list of text nodes and filtering out white space only ones
+		// getting a list of text nodes and filtering out whitespace only ones
 		let textNodes = textNodesUnder(body)
 		.filter( node => {
 			return !node.textContent.match(/^\s*$/)
@@ -124,11 +124,14 @@ function activate(context) {
 			.replaceAll('‑', '-')
 			.replaceAll('—', '-')
 
-			// getting only text (no whitespaces) 
+			// getting only text (no whitespaces) that's going to be replaced
 			let textToReplace = textNode.textContent.trim()
 
+			// removing any whitespace duplicates and new line characters
+			let inlineText = textToReplace.replaceAll(/\s+/g,' ')
+
 			// replacing text in text node with a formatted version
-			textNode.textContent = textNode.textContent.replace(textToReplace, reformat(textToReplace))
+			textNode.textContent = textNode.textContent.replace(textToReplace, reformat(inlineText))
 		}
 		
 		// the program changes all '&' to '&amp;' so we undo that change

@@ -4,7 +4,7 @@ Wtyczka VS Code formatująca treści zawarte w pliku HTML. Cała zawartość pli
 
 ## Features
 
-Wtyczka pobiera zawartośc tagu <body> następnie znajduje elementy tekstowe i&nbsp;usuwa 'sierotki'. W przypadku wystąpienia tekstu pomiędzy znakami '@@' wtyczka pakuje zawartość w tag <strong>.
+Wtyczka pobiera zawartośc tagu <body> następnie znajduje elementy tekstowe i&nbsp;usuwa 'sierotki'. W przypadku wystąpienia tekstu pomiędzy znakami '@@...@@@' wtyczka pakuje zawartość w tag `<strong>`.
 
 ## Requirements
 
@@ -36,3 +36,8 @@ Adding `<!DOCTYPE HTML>` to the beginning of the formetted file.
 
 Now script gathers text nodes and puts them into an array. It no longers stringifies the whole body.
 Then the array is filter (white space only entries are removed) and the rest is formatted as usual.
+
+### 1.0.5
+
+The script removes any new line characters and duplicate whitespace white characters within the replaced text.
+The formatted text is returned in one line.
