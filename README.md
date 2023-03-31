@@ -41,3 +41,7 @@ Then the array is filter (white space only entries are removed) and the rest is 
 
 The script removes any new line characters and duplicate whitespace white characters within the replaced text.
 The formatted text is returned in one line.
+
+### 1.0.6
+
+Removed the feature which allowed for putting text between `@@...@@` into a `<strong>` tag.

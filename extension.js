@@ -62,23 +62,19 @@ function reformat(string) {
 		return `${val}&nbsp;`;
 	});
 
-	// For strong use @@some text@@
-	var occurances = [...reformated.matchAll(/\@{2}(.*?)\@{2}/g)]
-	occurances.forEach(occurance => {
-		reformated = reformated.replace(occurance[0], `<strong>${occurance[1]}</strong>`)
-	})
-
 	return reformated.slice(1,-1);
 }
 
 function textNodesUnder(node){
 	var all = [];
+	
 	for (node=node.firstChild;node;node=node.nextSibling){
 		if (node.nodeType==3) all.push(node);
 		else all = all.concat(textNodesUnder(node));
 	}
+
 	return all;
-	}
+}
 
 function activate(context) {
 
@@ -136,6 +132,7 @@ function activate(context) {
 		
 		// the program changes all '&' to '&amp;' so we undo that change
 		body.innerHTML = body.innerHTML.replaceAll('&amp;', '&')
+		
 		vscode.window.activeTextEditor.edit(builder => {
 			const doc = vscode.window.activeTextEditor.document;
 			builder.replace(new vscode.Range(doc.lineAt(0).range.start, doc.lineAt(doc.lineCount - 1).range.end), `<!DOCTYPE HTML>\n<html lang="pl-PL">\n${DOM.window.document.documentElement.innerHTML}\n</html>`);
