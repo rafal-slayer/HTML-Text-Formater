@@ -45,3 +45,6 @@ The formatted text is returned in one line.
 ### 1.0.6
 
 Removed the feature which allowed for putting text between `@@...@@` into a `<strong>` tag.
+### 1.0.7
+
+Added exception for elements containing card data.

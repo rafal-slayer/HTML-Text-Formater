@@ -99,8 +99,6 @@ function activate(context) {
 		  });
 
 		let body = DOM.window.document.body
-		// let bodyStringified = body.outerHTML
-
 
 		// getting a list of text nodes and filtering out whitespace only ones
 		let textNodes = textNodesUnder(body)
@@ -110,6 +108,10 @@ function activate(context) {
 
 		// going throught each text node
 		for(let textNode of textNodes){
+
+			if(textNode.parentElement.className.match(/cm-card-(data|version|index|ean|date-production)/g)){
+				continue;
+			}
 
 			// removing any unnecessary special characters
 			textNode.textContent = textNode.textContent
@@ -122,17 +124,16 @@ function activate(context) {
 
 			// getting only text (no whitespaces) that's going to be replaced
 			let textToReplace = textNode.textContent.trim()
-
+			
 			// removing any whitespace duplicates and new line characters
-			let inlineText = textToReplace.replaceAll(/\s+/g,' ')
-
+			let inlineText = textToReplace.replaceAll(/\s+/g,' ').trim()
+			
 			// replacing text in text node with a formatted version
 			textNode.textContent = textNode.textContent.replace(textToReplace, reformat(inlineText))
 		}
 		
 		// the program changes all '&' to '&amp;' so we undo that change
 		body.innerHTML = body.innerHTML.replaceAll('&amp;', '&')
-		
 		vscode.window.activeTextEditor.edit(builder => {
 			const doc = vscode.window.activeTextEditor.document;
 			builder.replace(new vscode.Range(doc.lineAt(0).range.start, doc.lineAt(doc.lineCount - 1).range.end), `<!DOCTYPE HTML>\n<html lang="pl-PL">\n${DOM.window.document.documentElement.innerHTML}\n</html>`);
