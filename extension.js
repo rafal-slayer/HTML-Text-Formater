@@ -15,7 +15,7 @@ const beautify = require("js-beautify").html;
  */
 
 function reformat(string) {
-	var inputValue = ` ${string.toString()} `;
+	var inputValue = `${string.toString()}`;
 
 	// Brand sierotki
 	// var brandName = document.getElementById("brand").value;
@@ -62,7 +62,7 @@ function reformat(string) {
 		return `${val}&nbsp;`;
 	});
 
-	return reformated.slice(1,-1);
+	return reformated
 }
 
 function textNodesUnder(node){

@@ -48,3 +48,6 @@ Removed the feature which allowed for putting text between `@@...@@` into a `<st
 ### 1.0.7
 
 Added exception for elements containing card data.
+### 1.0.8
+
+Fixed error adding ``&nbsp;`` to the end of the line.
