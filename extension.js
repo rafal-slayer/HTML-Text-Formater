@@ -109,7 +109,7 @@ function activate(context) {
 		// going throught each text node
 		for(let textNode of textNodes){
 
-			if(textNode.parentElement.className.match(/cm-card-(data|version|index|ean|date-production)/g)){
+			if(textNode.parentElement.className.match(/cm-card-(data|version|index|ean|date-production)/g) || textNode.parentElement.nodeName.toUpperCase() == 'SCRIPT' ){
 				continue;
 			}
 

@@ -51,3 +51,6 @@ Added exception for elements containing card data.
 ### 1.0.8
 
 Fixed error adding ``&nbsp;`` to the end of the line.
+### 1.0.9
+
+Fixed error where the extension parsed ``<script>`` tags
