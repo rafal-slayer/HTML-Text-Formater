@@ -30,7 +30,7 @@ function reformat(string) {
 	// var reformated = inputValue.replace(brandRegex, reformatedBrand);
 
 	const sierotki =
-	/ i | a | z | w | oraz | lub | u | I | A | Z | W | ORAZ | LUB | U | o | O | od | do | OD | DO | to | TO | za | ZA /g;
+	/ i | a | z | w | oraz | lub | u | I | A | Z | W | ORAZ | LUB | U | o | O | od | do | OD | DO | Od | Do | to | TO | To | za | ZA | Za /g;
 	const cyferki = /[0-9] /g;
 	const literka_a = /, a |, A /g;
 	const short_dash = /-/g;
